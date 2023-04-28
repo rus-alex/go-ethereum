@@ -108,3 +108,19 @@ test_resetting_timer {quantile="0.99"} 120000000
 		t.Fatal("unexpected collector output")
 	}
 }
+
+func TestKeyMutation(t *testing.T) {
+	for key, exp := range map[string]string{
+		"":                            "",
+		"A":                           "A",
+		"api_http_requests_total":     "api_http_requests_total",
+		"API_http_requests-total":     "API_http_requests_total",
+		"api~http%requests$total/0":   "api_http_requests_total_0",
+		"09api~http%requests$total/0": "_09api_http_requests_total_0",
+	} {
+		got := mutateKey(key)
+		if got != exp {
+			t.Fatalf("Key mutation fail: got '%s' want '%s'", got, exp)
+		}
+	}
+}

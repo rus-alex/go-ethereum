@@ -19,8 +19,8 @@ package prometheus
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/metrics"
 )
@@ -115,6 +115,16 @@ func (c *collector) writeSummaryPercentile(name, p string, value interface{}) {
 	c.buff.WriteString(fmt.Sprintf(keyQuantileTagValueTpl, name, p, value))
 }
 
+var (
+	keyInvalidCharacters = regexp.MustCompile("[^a-zA-Z0-9_]")
+	digitalPrefix        = regexp.MustCompile("^[0-9].*")
+)
+
 func mutateKey(key string) string {
-	return strings.Replace(key, "/", "_", -1)
+	key = keyInvalidCharacters.ReplaceAllLiteralString(key, "_")
+	if digitalPrefix.MatchString(key) {
+		key = "_" + key
+	}
+
+	return key
 }
