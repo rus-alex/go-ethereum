@@ -6273,10 +6273,19 @@ module.exports = Sfc;
           outputFormatter: formatters.outputBigNumberFormatter
         });
 
+        var getValidators = new Method({
+          name: 'getValidators',
+          call: 'abft_getValidators',
+          params: 1,
+          inputFormatter: [formatters.inputBlockNumberFormatter],
+          outputFormatter: formatters.outputKeysToDecimal
+        });
+
         return [
           getDowntime,
           getEpochUptime,
           getOriginatedEpochFee,
+          getValidators,
         ];
     };
 
